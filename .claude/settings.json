@@ -1,0 +1,9 @@
+{
+  "env": {},
+  "allowedCommands": {
+    "browse": true,
+    "git": true,
+    "npm": false,
+    "python": true
+  }
+}
