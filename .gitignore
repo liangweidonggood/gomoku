@@ -12,4 +12,5 @@ Thumbs.db
 # Claude Code runtime data - keep project configuration and guidance
 .claude/memory/
 .claude/tasks/
-.clude/cache/
+.claude/cache/
+.claude/settings.local.json
