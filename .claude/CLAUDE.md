@@ -1,52 +1,54 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文件为 Claude Code 在此仓库工作时提供指引。
 
-## Overview
+## 项目概述
 
-Pure HTML/CSS/JavaScript Gomoku (Five in a Row) game using Canvas API. No build tools, no dependencies, just static files.
+纯 HTML/CSS/JavaScript 五子棋，使用 Canvas API。无需构建工具，无第三方依赖，仅静态文件。
 
-## Commands
+## 常用命令
 
-No build required. Run locally with:
+无需构建，本地运行方式：
 
 ```bash
-# Direct open
+# 直接打开
 open index.html
 
-# Or start local server
+# 或者启动本地服务器
 python -m http.server 8000
-# Then visit http://localhost:8000
+# 然后访问 http://localhost:8000
 ```
 
-JavaScript syntax check:
+JavaScript 语法检查：
 
 ```bash
 node -c app.js
 ```
 
-## Architecture
+## 架构
 
-- **`index.html`** - Entry point, contains canvas element, status display, and restart button
-- **`style.css`** - Styling, centers game on page, modern clean design
-- **`app.js`** - Full game logic:
-  - Constants: `BOARD_SIZE = 15`, `GRID_SIZE = 30px` per cell
-  - State: `board[][]` (0=empty, 1=black, 2=white), `currentPlayer`, `gameOver`
-  - `initGame()` - Reset game state
-  - `drawBoard()` - Clear canvas and draw grid + pieces
-  - `drawPiece()` - Draw single piece with 3D shading effect
-  - `handleCanvasClick()` - Convert click coordinates to grid, validate move, place piece, check win, switch player
-  - `checkWin(row, col)` - Check four directions (horizontal, vertical, two diagonals) for 5+ consecutive pieces - returns true if win
-  - `updateStatus()` - Update status text display
+- **`index.html`** - 入口文件，包含 canvas 元素、状态显示和按钮
+- **`style.css`** - 样式，居中游戏，现代简洁设计
+- **`app.js`** - 完整游戏逻辑：
+  - 常量：`BOARD_SIZE = 15`, 每个格子 `GRID_SIZE = 30px`
+  - 状态：`board[][]` (0=空, 1=黑棋, 2=白棋), `currentPlayer`, `gameOver`, `lastMove` (最后一步)
+  - `initGame()` - 重置游戏状态
+  - `drawBoard()` - 清空画布，绘制网格和棋子
+  - `drawPiece()` - 绘制单个棋子，带立体阴影效果
+  - `handleCanvasClick()` - 点击坐标转棋盘坐标，验证移动，落子，检查胜负，切换玩家
+  - `checkWin(row, col)` - 检查四个方向（横、竖、两个对角线）是否有5个以上连续棋子 - 获胜返回 true
+  - `undoLastMove()` - 悔棋，撤销最后一步
+  - `updateStatus()` - 更新状态文本显示
 
-## Key Algorithms
+## 核心算法
 
-Win detection starts from the last placed piece and counts consecutive matching pieces in both directions for each of the four possible winning lines. This is more efficient than scanning the entire board.
+胜负检测从最后落子位置开始，在四个可能获胜方向分别向两边计数连续相同棋子。这种方法比扫描整个棋盘更高效。
 
-## Game Rules
+## 游戏规则
 
-- 15×15 standard board
-- Black plays first
-- Players alternate turns clicking to place pieces
-- First player with five consecutive pieces in a line (horizontal, vertical, or diagonal) wins
-- Click "重新开始" to restart the game at any time
+- 15×15 标准棋盘
+- 黑方先行
+- 玩家轮流点击棋盘落子
+- 先在一条直线（横、竖、斜）连成五子者获胜
+- 点击「重新开始」可随时重新游戏
+- 点击「悔棋」可撤销最后一步
