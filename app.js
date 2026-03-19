@@ -16,6 +16,7 @@ let board = [];
 let currentPlayer = 1;  // 1=黑, 2=白
 let gameOver = false;
 let statusElement;
+let lastMove = null;  // 存储最后一步 {row, col}
 
 // 初始化游戏
 function initGame() {
@@ -23,6 +24,7 @@ function initGame() {
     board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(0));
     currentPlayer = 1;
     gameOver = false;
+    lastMove = null;
     updateStatus();
     drawBoard();
 }
@@ -115,6 +117,8 @@ function handleCanvasClick(event) {
     // 落子
     board[row][col] = currentPlayer;
     drawPiece(row, col, currentPlayer);
+    // 记录最后一步
+    lastMove = {row, col};
 
     // 检查是否获胜
     if (checkWin(row, col)) {
@@ -169,11 +173,31 @@ function checkWin(row, col) {
     return false;
 }
 
+// 悔棋 - 撤销最后一步
+function undoLastMove() {
+    // 如果没有最后一步或者游戏已经结束，不处理
+    if (!lastMove || gameOver) return;
+
+    // 清除最后一步
+    const {row, col} = lastMove;
+    board[row][col] = 0;
+    lastMove = null;
+
+    // 切换回上一个玩家
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    gameOver = false;
+
+    // 重绘棋盘并更新状态
+    drawBoard();
+    updateStatus();
+}
+
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => {
     canvas = document.getElementById('board');
     ctx = canvas.getContext('2d');
     statusElement = document.getElementById('status');
+    const undoBtn = document.getElementById('undoBtn');
     const restartBtn = document.getElementById('restartBtn');
 
     // 设置canvas尺寸
@@ -182,6 +206,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 绑定点击事件
     canvas.addEventListener('click', handleCanvasClick);
+    undoBtn.addEventListener('click', undoLastMove);
     restartBtn.addEventListener('click', initGame);
 
     // 开始游戏
