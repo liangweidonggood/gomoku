@@ -39,6 +39,32 @@ canvas {
     background-color: #d4a574;
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* 触摸操作时禁用浏览器默认行为 */
+    touch-action: manipulation;
+}
+
+/* 响应式：小屏幕自动缩放棋盘 */
+@media (max-width: 500px) {
+    h1 {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    .status {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    canvas {
+        max-width: calc(100vw - 20px);
+        height: auto;
+        transform-origin: center;
+    }
+
+    button {
+        padding: 8px 18px;
+        font-size: 15px;
+    }
 }
 
 .controls {
