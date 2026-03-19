@@ -100,9 +100,11 @@ function handleCanvasClick(event) {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    // 转换为棋盘行列坐标
-    const col = Math.round((x - GRID_SIZE/2) / GRID_SIZE);
-    const row = Math.round((y - GRID_SIZE/2) / GRID_SIZE);
+    // 转换为棋盘行列坐标（考虑CSS缩放）
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const col = Math.round(((x * scaleX) - GRID_SIZE/2) / GRID_SIZE);
+    const row = Math.round(((y * scaleY) - GRID_SIZE/2) / GRID_SIZE);
 
     // 检查是否在合法范围内
     if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
@@ -192,6 +194,52 @@ function undoLastMove() {
     updateStatus();
 }
 
+// 处理触摸结束事件（移动端）
+function handleCanvasTouchEnd(event) {
+    if (gameOver) return;
+    // 阻止触摸默认行为（避免滚动页面时误触发落子）
+    event.preventDefault();
+
+    // 获取第一个触摸点
+    const touch = event.changedTouches[0];
+    const rect = canvas.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    // 转换为棋盘行列坐标（考虑CSS缩放）
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const col = Math.round(((x * scaleX) - GRID_SIZE/2) / GRID_SIZE);
+    const row = Math.round(((y * scaleY) - GRID_SIZE/2) / GRID_SIZE);
+
+    // 检查是否在合法范围内
+    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+        return;
+    }
+
+    // 检查位置是否已经有棋子
+    if (board[row][col] !== 0) {
+        return;
+    }
+
+    // 落子
+    board[row][col] = currentPlayer;
+    drawPiece(row, col, currentPlayer);
+    // 记录最后一步
+    lastMove = {row, col};
+
+    // 检查是否获胜
+    if (checkWin(row, col)) {
+        gameOver = true;
+        updateStatus();
+        return;
+    }
+
+    // 切换玩家
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    updateStatus();
+}
+
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => {
     canvas = document.getElementById('board');
@@ -200,12 +248,17 @@ window.addEventListener('DOMContentLoaded', () => {
     const undoBtn = document.getElementById('undoBtn');
     const restartBtn = document.getElementById('restartBtn');
 
-    // 设置canvas尺寸
+    // 设置canvas尺寸（逻辑分辨率保持不变）
     canvas.width = CANVAS_SIZE;
     canvas.height = CANVAS_SIZE;
 
-    // 绑定点击事件
+    // 绑定点击事件（桌面）
     canvas.addEventListener('click', handleCanvasClick);
+    // 绑定触摸事件（移动）
+    canvas.addEventListener('touchend', handleCanvasTouchEnd);
+    // 阻止触摸滚动时触发点击
+    canvas.addEventListener('touchstart', (e) => e.preventDefault(), {passive: false});
+
     undoBtn.addEventListener('click', undoLastMove);
     restartBtn.addEventListener('click', initGame);
 
