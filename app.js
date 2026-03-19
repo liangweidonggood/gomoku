@@ -91,7 +91,41 @@ function drawPiece(row, col, player) {
 
 // 处理canvas点击
 function handleCanvasClick(event) {
-    // TODO: 实现点击落子逻辑
+    if (gameOver) return;
+
+    // 获取鼠标相对于canvas的坐标
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    // 转换为棋盘行列坐标
+    const col = Math.round((x - GRID_SIZE/2) / GRID_SIZE);
+    const row = Math.round((y - GRID_SIZE/2) / GRID_SIZE);
+
+    // 检查是否在合法范围内
+    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+        return;
+    }
+
+    // 检查位置是否已经有棋子
+    if (board[row][col] !== 0) {
+        return;
+    }
+
+    // 落子
+    board[row][col] = currentPlayer;
+    drawPiece(row, col, currentPlayer);
+
+    // 检查是否获胜
+    if (checkWin(row, col)) {
+        gameOver = true;
+        updateStatus();
+        return;
+    }
+
+    // 切换玩家
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    updateStatus();
 }
 
 // 检查是否获胜
