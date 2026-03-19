@@ -42,12 +42,51 @@ function updateStatus(message) {
 
 // 绘制棋盘
 function drawBoard() {
-    // TODO: 实现绘制棋盘网格
+    // 清空画布
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    // 绘制网格线
+    ctx.strokeStyle = '#8b4513';
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        // 横线
+        ctx.beginPath();
+        ctx.moveTo(GRID_SIZE/2, GRID_SIZE/2 + i * GRID_SIZE);
+        ctx.lineTo(CANVAS_SIZE - GRID_SIZE/2, GRID_SIZE/2 + i * GRID_SIZE);
+        ctx.stroke();
+
+        // 竖线
+        ctx.beginPath();
+        ctx.moveTo(GRID_SIZE/2 + i * GRID_SIZE, GRID_SIZE/2);
+        ctx.lineTo(GRID_SIZE/2 + i * GRID_SIZE, CANVAS_SIZE - GRID_SIZE/2);
+        ctx.stroke();
+    }
+
+    // 绘制已经落下的棋子
+    for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+            if (board[row][col] !== 0) {
+                drawPiece(row, col, board[row][col]);
+            }
+        }
+    }
 }
 
 // 绘制单个棋子
 function drawPiece(row, col, player) {
-    // TODO: 实现绘制棋子
+    const x = col * GRID_SIZE + GRID_SIZE/2;
+    const y = row * GRID_SIZE + GRID_SIZE/2;
+
+    ctx.beginPath();
+    ctx.arc(x, y, PIECE_RADIUS, 0, Math.PI * 2);
+    ctx.fillStyle = COLORS[player];
+    ctx.fill();
+
+    // 添加边框阴影让棋子更立体
+    ctx.strokeStyle = player === 1 ? '#333' : '#ccc';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 }
 
 // 处理canvas点击
