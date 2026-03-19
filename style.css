@@ -56,6 +56,10 @@ button {
     transition: background-color 0.2s;
 }
 
+button + button {
+    margin-left: 12px;
+}
+
 button:hover {
     background-color: #2980b9;
 }
