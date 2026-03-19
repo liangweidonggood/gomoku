@@ -128,9 +128,45 @@ function handleCanvasClick(event) {
     updateStatus();
 }
 
-// 检查是否获胜
+// 检查是否获胜，四个方向检查
 function checkWin(row, col) {
-    // TODO: 实现胜负判断
+    const player = board[row][col];
+    const directions = [
+        [[0, 1], [0, -1]],    // 水平方向
+        [[1, 0], [-1, 0]],    // 垂直方向
+        [[1, 1], [-1, -1]],   // 对角线 \
+        [[1, -1], [-1, 1]]    // 对角线 /
+    ];
+
+    // 检查每个方向
+    for (const [dir1, dir2] of directions) {
+        let count = 1;  // 当前位置已经有一个
+
+        // 向第一个方向数
+        let r = row + dir1[0];
+        let c = col + dir1[1];
+        while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE && board[r][c] === player) {
+            count++;
+            r += dir1[0];
+            c += dir1[1];
+        }
+
+        // 向相反方向数
+        r = row + dir2[0];
+        c = col + dir2[1];
+        while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE && board[r][c] === player) {
+            count++;
+            r += dir2[0];
+            c += dir2[1];
+        }
+
+        // 达到五个就连线获胜
+        if (count >= 5) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // 页面加载完成后初始化
